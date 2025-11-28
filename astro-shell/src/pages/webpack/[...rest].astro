@@ -1,0 +1,14 @@
+---
+export const prerender = false;
+import MainLayout from "../../layouts/MainLayout.astro";
+
+const webpackScriptSrc = import.meta.env.DEV
+	? "http://localhost:4001/remote.js"
+	: "/remotes/webpack/remote.js";
+---
+
+<MainLayout title="Webpack Remote">
+	<remote-webpack-app></remote-webpack-app>
+	<script src={webpackScriptSrc}></script>
+	<script is:inline src="/event-bus.js"></script>
+</MainLayout>

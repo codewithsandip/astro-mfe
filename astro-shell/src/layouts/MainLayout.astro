@@ -1,0 +1,28 @@
+---
+import ShellHeader from "../components/ShellHeader.jsx";
+
+const { title } = Astro.props;
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>{title ?? "Astro Shell"}</title>
+	</head>
+	<body
+		style="
+      margin: 0;
+      font-family: system-ui, sans-serif;
+      background: #f3f4f6;
+    "
+	>
+		<ShellHeader client:load />
+
+		<main style="padding: 16px;">
+			<slot />
+		</main>
+
+		<!-- Global event bus available to all remotes -->
+		<script is:inline src="/event-bus.js"></script>
+	</body>
+</html>

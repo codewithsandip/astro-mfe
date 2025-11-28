@@ -1,0 +1,19 @@
+---
+export const prerender = false;
+import MainLayout from "../../layouts/MainLayout.astro";
+
+const viteScriptDev = "http://localhost:5174/src/main.jsx";
+const viteScriptProd = "/remotes/vite/remote-vite-app.iife.js";
+---
+
+<MainLayout title="Vite Remote">
+	<remote-vite-app></remote-vite-app>
+	{
+		import.meta.env.DEV ? (
+			<script type="module" src={viteScriptDev} />
+		) : (
+			<script src={viteScriptProd} />
+		)
+	}
+	<script is:inline src="/event-bus.js"></script>
+</MainLayout>
