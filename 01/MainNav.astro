@@ -44,48 +44,46 @@ const tabs = [
 </style>
 
 <script>
-  // This script runs in the browser for this component
   if (typeof window !== "undefined") {
-    const updateRemote = (tab) => {
-      // Persist active tab between reloads (optional)
-      try {
-        localStorage.setItem("activeTab", tab);
-      } catch {}
 
-      // Update active tab classes
-      const buttons = document.querySelectorAll("nav.tabs .tab-button");
-      buttons.forEach((btn) => {
+    const updateUI = (tab, updateUrl = true) => {
+      // highlight button
+      document.querySelectorAll(".tab-button").forEach((btn) => {
         btn.classList.toggle("active", btn.dataset.tab === tab);
       });
 
-      // Swap the remote Web Component in the container
+      // swap web component
       const container = document.getElementById("remote-container");
-      if (!container) return;
       container.innerHTML = "";
-
       const tag = tab === "vite" ? "remote-vite-app" : "remote-webpack-app";
-      const el = document.createElement(tag);
-      container.appendChild(el);
+      container.appendChild(document.createElement(tag));
+
+      // update URL without reload
+      if (updateUrl) {
+        history.pushState({ tab }, "", `/${tab}`);
+      }
     };
 
-    document.addEventListener("DOMContentLoaded", () => {
-      const buttons = document.querySelectorAll("nav.tabs .tab-button");
-
-      buttons.forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const tab = btn.dataset.tab;
-          if (!tab) return;
-          updateRemote(tab);
-        });
+    // handle click events for buttons
+    document.querySelectorAll(".tab-button").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault(); // prevent full page navigation
+        updateUI(btn.dataset.tab);
       });
+    });
 
-      // Initial tab on first load
-      let initial = "vite";
-      try {
-        initial = localStorage.getItem("activeTab") || "vite";
-      } catch {}
+    // initial load (deep link support)
+    document.addEventListener("DOMContentLoaded", () => {
+      const path = location.pathname.replace("/", "");
+      const initial = ["vite", "webpack"].includes(path) ? path : "vite";
+      updateUI(initial, false);
+    });
 
-      updateRemote(initial);
+    // back/forward button support
+    window.addEventListener("popstate", (event) => {
+      const tab = event.state?.tab || location.pathname.replace("/", "") || "vite";
+      updateUI(tab, false);
     });
   }
 </script>
+
